@@ -11,7 +11,6 @@ const createUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные.'));
-        return;
       }
       next(new ServerError('Ошибка на сервере'));
     });
@@ -30,14 +29,12 @@ const getUser = (req, res, next) => {
     .then((users) => {
       if (!users) {
         next(new NotFoundError('Пользователь не найден.'));
-        return;
       }
       res.status(200).send({ data: users });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные.'));
-        return;
       }
       next(new ServerError('Ошибка на сервере'));
     });
@@ -64,7 +61,6 @@ const updateAvatar = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные.'));
-        return;
       }
       next(new ServerError('Ошибка на сервере'));
     });
