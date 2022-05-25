@@ -33,7 +33,7 @@ const deleteCard = (req, res, next) => {
       res.send({ data: card });
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные.'));
       }
       next(new ServerError('Ошибка на сервере'));
@@ -48,7 +48,10 @@ const LikeCard = (req, res, next) => {
       }
       res.send({ data: card });
     })
-    .catch(() => {
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new BadRequestError('Переданы некорректные данные.'));
+      }
       next(new ServerError('Ошибка на сервере'));
     });
 };
