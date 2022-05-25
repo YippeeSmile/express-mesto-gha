@@ -28,9 +28,9 @@ const deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
-        next(new NotFoundError('Карточка не найдена.'));
+        return next(new NotFoundError('Карточка не найдена.'));
       }
-      res.send({ data: card });
+      return res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -46,10 +46,13 @@ const LikeCard = (req, res, next) => {
       if (!card) {
         next(new NotFoundError('Карточка не найдена.'));
       }
-      res.send({ data: card });
+      return res.send({ data: card });
     })
-    .catch(() => {
-      next(new ServerError('Ошибка на сервере'));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(400).send('Переданы некорректные данные (id карточки).');
+      }
+      return res.status(500).send('Ошибка на сервере');
     });
 };
 
