@@ -11,8 +11,9 @@ const createUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные.'));
+      } else {
+        next(new ServerError('Ошибка на сервере'));
       }
-      next(new ServerError('Ошибка на сервере'));
     });
 };
 

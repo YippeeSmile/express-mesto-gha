@@ -27,6 +27,8 @@ app.use((req, _, next) => {
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
 
+app.use('*', (_, res) => res.status(404).send({ message: 'Cтраница не найдена.' }));
+
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`App listening on port ${PORT}`);
