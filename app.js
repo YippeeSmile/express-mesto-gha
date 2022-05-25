@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const { PORT = 3000 } = process.env;
 
 const errorHandler = (err, req, res, next) => {
-  res.status(err.code).send(err.message);
+  res.status(err.code).send({ message: err.message });
   next();
 };
 
