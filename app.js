@@ -15,8 +15,6 @@ const errorHandler = (err, req, res, next) => {
   next();
 };
 
-app.use(errorHandler);
-
 app.use((req, _, next) => {
   req.user = {
     _id: '628cbe6de71aa4a03c14ddea',
@@ -28,6 +26,8 @@ app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
 
 app.use('*', (_, res) => res.status(404).send({ message: 'Cтраница не найдена.' }));
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
