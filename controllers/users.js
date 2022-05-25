@@ -29,13 +29,13 @@ const getUser = (req, res, next) => {
   User.findById(req.params.userId)
     .then((users) => {
       if (!users) {
-        next(new NotFoundError({ message: 'Пользователь не найден.' }));
+        next(new NotFoundError({ message: 'Пользователь с таким id не найден.' }));
       }
       res.status(200).send({ data: users });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError({ message: 'Переданы некорректные данные.' }));
+        next(new BadRequestError({ message: 'Переданы некорректный id.' }));
       }
       next(new ServerError({ message: 'Ошибка на сервере' }));
     });
@@ -48,7 +48,7 @@ const updateUser = (req, res, next) => {
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError({ message: 'Переданы некорректные данные.' }));
+        next(new BadRequestError({ message: 'Переданы некорректные данные name или about' }));
       }
       next(new ServerError({ message: 'Ошибка на сервере' }));
     });

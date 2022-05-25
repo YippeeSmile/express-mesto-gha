@@ -60,15 +60,15 @@ const dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) {
-        next(new NotFoundError('Карточка не найдена.'));
+        next(new NotFoundError({ message: 'Карточка с таким id не найдена.' }));
       }
       res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Переданы некорректные данные.'));
+        next(new BadRequestError({ message: 'Переданы некорректные данные.' }));
       }
-      next(new ServerError('Ошибка на сервере'));
+      next(new ServerError({ message: 'Ошибка на сервере' }));
     });
 };
 
