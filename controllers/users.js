@@ -19,7 +19,7 @@ const createUser = (req, res, next) => {
 
 const getUsers = (_, res, next) => {
   User.find({})
-    .then((users) => res.send({ data: users }))
+    .then((users) => res.status(200).send({ data: users }))
     .catch(() => {
       next(new ServerError({ message: 'Ошибка на сервере' }));
     });
@@ -45,7 +45,7 @@ const updateUser = (req, res, next) => {
   const { name, about } = req.body;
 
   return User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidations: true })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError({ message: 'Переданы некорректные данные.' }));
@@ -59,7 +59,7 @@ const updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   return User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidations: true })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError({ message: 'Переданы некорректные данные.' }));
