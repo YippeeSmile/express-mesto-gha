@@ -48,9 +48,11 @@ const updateUser = (req, res, next) => {
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError({ message: 'Переданы некорректные данные name или about' }));
+        next(new BadRequestError({ message: 'Переданы некорректные данные.' }));
+      } else {
+        next(new ServerError({ message: 'Ошибка на сервере' }));
       }
-      next(new ServerError({ message: 'Ошибка на сервере' }));
+      next(err);
     });
 };
 
