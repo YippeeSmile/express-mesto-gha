@@ -66,6 +66,7 @@ const updateAvatar = (req, res, next) => {
       } else {
         next(new ServerError({ message: 'Ошибка на сервере' }));
       }
+      next(err);
     });
 };
 
