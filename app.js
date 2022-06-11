@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 const helmet = require('helmet');
 const express = require('express');
 const mongoose = require('mongoose');
@@ -5,6 +6,9 @@ const bodyParser = require('body-parser');
 const rateLimit = require('express-rate-limit');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
+
+const regExp = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/;
+const { celebrate, Joi } = require('celebrate');
 
 const app = express();
 
@@ -29,9 +33,23 @@ const errorHandler = (err, _, res, next) => {
   next();
 };
 
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
+  }),
+}), login);
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().pattern(regExp),
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
+  }),
+}), createUser);
 app.use(auth);
+
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
 
