@@ -3,6 +3,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const rateLimit = require('express-rate-limit');
+const { login, createUser } = require('./controllers/users');
+const auth = require('./middlewares/auth');
 
 const app = express();
 
@@ -12,28 +14,24 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
 app.use(limiter);
 
 const { PORT = 3000 } = process.env;
 
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, _, res, next) => {
   res.status(err.code).send({ message: err.message });
   next();
 };
 
-app.use((req, _, next) => {
-  req.user = {
-    _id: '628cbe6de71aa4a03c14ddea',
-  };
-  next();
-});
-
+app.post('/signin', login);
+app.post('/signup', createUser);
+app.use(auth);
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
 
@@ -42,6 +40,13 @@ app.use('*', (_, res) => res.status(404).send({ message: 'Cтраница не �
 app.use(errorHandler);
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
+
+app.use((err, _req, res) => {
+  res.locals.error = err;
+  const status = err.status || 500;
+  res.status(status);
+  res.render('error');
+});
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
