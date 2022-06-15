@@ -28,9 +28,6 @@ const createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  if (!email || !password) {
-    return next(new BadRequestError('Не передан email или пароль'));
-  }
   return bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
@@ -43,16 +40,14 @@ const createUser = (req, res, next) => {
         email: user.email,
       },
     }))
-    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.code === MONGO_DUPLICATE_KEY_CODE) {
-        return next(new ConflictError('Данный email уже зарегистрирован'));
+        next(new ConflictError('Данный email уже зарегистрирован'));
       }
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные.'));
-      } else {
-        next(err);
       }
+      return next(err);
     });
 };
 
@@ -68,9 +63,9 @@ const getUser = (req, res, next) => {
   User.findById(req.params.userId)
     .then((users) => {
       if (!users) {
-        next(new NotFoundError({ message: 'Пользователь с таким id не найден.' }));
+        return next(new NotFoundError({ message: 'Пользователь с таким id не найден.' }));
       }
-      res.status(200).send({ data: users });
+      return res.status(200).send({ data: users });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
