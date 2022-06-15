@@ -8,6 +8,7 @@ const { celebrate, Joi, errors } = require('celebrate');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/NotFoundError');
+const errorHandler = require('./middlewares/errorHandler');
 
 const regExp = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/;
 
@@ -30,14 +31,6 @@ const limiter = rateLimit({
 app.use(limiter);
 
 const { PORT = 3000 } = process.env;
-
-const errorHandler = (err, _req, res, next) => {
-  const statusCode = err.statusCode || 500;
-
-  const message = statusCode === 500 ? 'На сервере произошла ошибка' : err.message;
-  res.status(statusCode).send({ message });
-  next();
-};
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({

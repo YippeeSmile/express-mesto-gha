@@ -42,7 +42,7 @@ const deleteCard = (req, res, next) => {
       if (!cardInfo) {
         return next(new NotFoundError('Карточка не найдена.'));
       }
-      if (req.user._id === cardInfo.owner.toString()) {
+      if (req.user._id !== cardInfo.owner.toString()) {
         return next(new ForbiddenError('невозможно удалить карточку другого пользователя'));
       }
       return deleteCardHandler();
