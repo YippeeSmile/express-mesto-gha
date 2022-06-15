@@ -41,11 +41,12 @@ const createUser = (req, res, next) => {
       },
     }))
     .catch((err) => {
-      if (err.code === MONGO_DUPLICATE_KEY_CODE) {
-        next(new ConflictError('Данный email уже зарегистрирован'));
-      }
+      console.log(err);
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные.'));
+      }
+      if (err.code === MONGO_DUPLICATE_KEY_CODE) {
+        next(new ConflictError('Данный email уже зарегистрирован'));
       }
       return next(err);
     });
@@ -71,7 +72,7 @@ const getUser = (req, res, next) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректный id.'));
       }
-      next(new ServerError('Ошибка на сервере'));
+      return next(err);
     });
 };
 
