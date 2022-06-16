@@ -9,6 +9,7 @@ const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/NotFoundError');
 const errorHandler = require('./middlewares/errorHandler');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const regExp = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/;
 
@@ -32,12 +33,15 @@ app.use(limiter);
 
 const { PORT = 3000 } = process.env;
 
+app.use(requestLogger);
+
 app.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().email().required(),
     password: Joi.string().required(),
   }),
 }), login);
+
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
@@ -47,16 +51,19 @@ app.post('/signup', celebrate({
     password: Joi.string().required(),
   }),
 }), createUser);
+
 app.use(auth);
 
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
 
-app.use('*', (_, res, next) => next(new NotFoundError('Cтраница не найдена.')));
+app.use('*', (_req, _res, next) => next(new NotFoundError('Cтраница не найдена.')));
 
-app.use(errors());
+app.use(errorLogger); // подключаем логгер ошибок
 
-app.use(errorHandler);
+app.use(errors()); // обработчик ошибок celebrate
+
+app.use(errorHandler); // централизованный обработчик ошибок
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
 

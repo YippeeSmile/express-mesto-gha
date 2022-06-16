@@ -13,7 +13,9 @@
 
 [![Tests for sprint 14](https://github.com/${YippeeSmile}/${express-mesto-gha}/actions/workflows/tests-14-sprint.yml/badge.svg)](https://github.com/${YippeeSmile}/${express-mesto-gha}/actions/workflows/tests-14-sprint.yml)
 ```
+## Реализация бэкэнд проекта Место
 
+Использованные технологии: Node.js, MongoDB, Express.
 
 ## Директории
 
